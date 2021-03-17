@@ -30,7 +30,7 @@ namespace Exercise_1_Exceptions
                 tokenStream.Peek().TokenType != EExpressionTokenType.End)
             {
                 var peeked = tokenStream.Peek();
-                throw new ParseException(String.Format("Parser error at position {0}: An expression must start with a digit or \"(\"", peeked.StartIndex+1)); // unmatched )
+                throw new ParseException(String.Format("Parser error at position {0}: An expression must start with a digit or \"(\"", peeked.StartIndex + 1)); // unmatched )
             }
 
             while (tokenStream.IsFinshed == false)
@@ -54,15 +54,19 @@ namespace Exercise_1_Exceptions
                         _parenthesesCounter--;
                         if (_parenthesesCounter < 0)
                         {
-                            int i = 1;
-                            var peeked = tokenStream.Peek();
-                            string s = input[peeked.StartIndex - i].ToString();
-                            while (s.Equals(" "))
+                            int countClosingParethesis = input.Count(f => f == ')');
+                            int countOpeneninggParethesis = input.Count(f => f == '(');
+                            if (countClosingParethesis != countOpeneninggParethesis)
                             {
-                                s = input[peeked.StartIndex - ++i].ToString();
+                                int i = 1;
+                                var peeked = tokenStream.Peek();
+                                string s = input[peeked.StartIndex - i].ToString();
+                                while (s.Equals(" "))
+                                {
+                                    s = input[peeked.StartIndex - ++i].ToString();
+                                }
+                                throw new ParseException(String.Format("Parser error at position {0}: unmatched \")\" in expression", peeked.StartIndex - 1)); // unmatched )
                             }
-                            throw new ParseException(String.Format("Parser error at position {0}: unmatched \")\" in expression", peeked.StartIndex-1)); // unmatched )
-
                             //int i = 1;
                             //var peeked = tokenStream.Peek();
                             //string s = input[peeked.StartIndex - i].ToString();
@@ -125,7 +129,12 @@ namespace Exercise_1_Exceptions
 
             if (_parenthesesCounter != 0)
             {
-                throw new ParseException(String.Format("Parser error at position {0}: unmatched \"(\" in expression", input.Length)); // unclosed parantheses
+                int countClosingParethesis = input.Count(f => f == ')');
+                int countOpeneninggParethesis = input.Count(f => f == '(');
+                if (countClosingParethesis != countOpeneninggParethesis)
+                {
+                    throw new ParseException(String.Format("Parser error at position {0}: unmatched \"(\" in expression", input.Length)); // unclosed parantheses
+                }
             }
 
             return true;
